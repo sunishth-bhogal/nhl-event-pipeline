@@ -1,0 +1,26 @@
+{
+  "name": "nhl-event-pipeline",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:control": "npm run dev -w @nhl/control-api",
+    "dev:consumer": "npm run dev -w @nhl/consumer",
+    "dev:producer": "npm run dev -w @nhl/producer",
+    "dev:web": "npm run dev -w @nhl/web",
+    "dev": "concurrently -n control,consumer,producer,web -c blue,green,yellow,magenta \"npm:dev:control\" \"npm:dev:consumer\" \"npm:dev:producer\" \"npm:dev:web\"",
+    "record-fixture": "npm run record-fixture -w @nhl/producer",
+    "kafka:up": "docker compose up -d",
+    "kafka:down": "docker compose down",
+    "kafka:topics": "docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --if-not-exists --topic nhl.events.raw --partitions 3 --replication-factor 1",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "typescript": "^5.6.3"
+  }
+}
