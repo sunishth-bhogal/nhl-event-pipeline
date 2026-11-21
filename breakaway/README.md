@@ -6,8 +6,12 @@ A live hockey exchange, built in stages.
 if it were live and watch each team's chance of winning move with every goal,
 penalty and pulled goalie.
 
-Later steps add an order book and matching engine, a market-making bot that
-quotes around the model, play-money accounts, and live games.
+**Step 2 (in progress): the exchange.** The matching engine is done
+([engine/](engine/)): a zero-dependency Rust order book, checked event-for-event
+against a reference implementation on 10 million random commands, running at
+about 57 million commands a second. Next: play-money accounts and risk checks,
+a market-making bot that quotes around the win-probability model, and hooking
+markets into the replay.
 
 ## Layout
 
@@ -17,6 +21,7 @@ pipeline/   fetch_games.py downloads play-by-play (runs in GitHub Actions)
 data/       compact games, one gzipped JSON-lines file per season
 model/      wp.py (features + prediction), train.py (training + evaluation)
 web/        the replay player (static HTML/JS, no build step)
+engine/     Rust matching engine (cargo test --release; cargo run --release --bin bench)
 tests/      python3 tests/test_*.py
 ```
 

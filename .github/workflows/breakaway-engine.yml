@@ -1,0 +1,20 @@
+name: breakaway-engine
+on:
+  push:
+    branches: [breakaway]
+    paths: [breakaway/engine/**]
+  pull_request:
+    paths: [breakaway/engine/**]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: breakaway/engine
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo test --release
+        env:
+          BREAKAWAY_SEEDS: "100"
+      - run: cargo run --release --bin bench 2000000 | tee -a "$GITHUB_STEP_SUMMARY"

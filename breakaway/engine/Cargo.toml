@@ -1,0 +1,15 @@
+[package]
+name = "breakaway-engine"
+version = "0.1.0"
+edition = "2021"
+description = "Price-time priority matching engine for a binary 'home team wins' contract"
+license = "MIT"
+
+[dependencies]
+# none: the hot path is entirely this crate
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+debug = false
