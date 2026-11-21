@@ -6,7 +6,7 @@ A live hockey exchange, built in stages.
 if it were live and watch each team's chance of winning move with every goal,
 penalty and pulled goalie.
 
-**Step 2 (in progress): the exchange.** The matching engine is done
+**Step 2 (done): the exchange.** The matching engine is done
 ([engine/](engine/)): a zero-dependency Rust order book, checked event-for-event
 against a reference implementation on 10 million random commands, running at
 about 57 million commands a second. Play-money accounts are done too: fully
@@ -15,8 +15,16 @@ conservation verified after every command (about 25 million commands a second
 with risk checks on). And every replay now has a market: a market-making bot
 and simulated traders trade the "home wins" contract through the real
 exchange while the game plays, and the page shows the market price next to
-the model, the order book, trades and the bot's P&L. Next: real people
-trading (a gateway in front of the exchange) and live games.
+the model, the order book, trades and the bot's P&L.
+
+**Step 3 (done): real people trading.** A zero-dependency Rust server puts the
+exchange online: one engine thread sequences every order, every batch is
+written to a journal and fsynced before anyone gets a reply, and a server
+killed mid-game restarts to the exact same state. It replays a game on a
+clock, keeps the market alive with the bot and background traders, settles
+at the final whistle and moves on to the next game. Open `/trade` to join
+with $1,000 of play money and trade against them. About 40,000 durable
+requests a second on a laptop-class machine. Next: live games.
 
 ## Layout
 
@@ -25,8 +33,8 @@ pipeline/   fetch_games.py downloads play-by-play (runs in GitHub Actions)
             SEASONS lists which seasons to fetch; editing it triggers the download
 data/       compact games, one gzipped JSON-lines file per season
 model/      wp.py (features + prediction), train.py (training + evaluation)
-web/        the replay player (static HTML/JS, no build step)
-engine/     Rust matching engine (cargo test --release; cargo run --release --bin bench)
+web/        the replay player and the trading page (static HTML/JS, no build step)
+engine/     Rust matching engine, exchange and server (cargo test --release)
 tests/      python3 tests/test_*.py
 ```
 
@@ -39,7 +47,8 @@ python3 model/train.py          # train + evaluate -> model/wp_model.json, model
 python3 model/export_games.py   # featured replays -> web/games/
 python3 model/fair_paths.py     # second-by-second fair price per featured game
 (cd engine && cargo run --release --bin simulate -- data/fair ../web/markets)   # simulated markets
-cd web && python3 -m http.server 8000   # open http://localhost:8000
+cd web && python3 -m http.server 8000   # replays only: open http://localhost:8000
+(cd engine && cargo run --release --bin server)   # live trading: open http://localhost:8123/trade
 python3 tests/test_fetch.py && python3 tests/test_parity.py
 ```
 

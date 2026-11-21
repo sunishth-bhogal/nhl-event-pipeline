@@ -125,3 +125,74 @@ id, so output is identical every run. Across the 11 featured games: about
 1,492 trades and 10,432 contracts per game, the market's midpoint typically within
 ~2¢ of the model with a 3–4¢ spread. In comeback games the sharps, who trade
 on the model, lose: the model was confidently wrong about who would win.
+
+## The server (`src/bin/server/`)
+
+`cargo run --release --bin server -- [--port 8123] [--speed 10] [--data DIR]`
+serves the web pages and a live market on one replayed game at a time.
+Standard library only: no async runtime, no HTTP crate.
+
+```
+browsers ──HTTP──▶ connection threads ──channel──▶ engine thread ──▶ journal (fsync)
+                   (parse, auth, rate limit)       (sequencer: the   │
+        ◀──reply── ◀───────────────────────────────  only writer)    ▼
+        ◀──SSE ─── market data fan-out ◀──────────────────────── replies sent
+```
+
+- **One writer.** Every connection thread parses its request and hands it to
+  the engine thread over a channel. That thread is the only code that
+  touches the exchange, so there are no locks around the book and the order
+  of commands is the order in the journal.
+- **Group commit.** The engine thread drains everything waiting in the
+  channel, applies it, appends it to the journal, calls `sync_data` once,
+  and only then sends the replies. A player who sees "Filled" knows the fill
+  is on disk; busy moments share one fsync.
+- **Crash recovery.** The journal (`journal.rs`) is one line per command,
+  game-clock tick or player join. On start the server replays it through
+  the same code path and arrives at the identical state (checked by state
+  hash in the tests, after a `kill -9`). A half-written last line from a
+  crash is ignored and trimmed; damage anywhere else is refused, because
+  silently skipping a command would change history.
+- **The market.** The game clock steps through a featured game's
+  second-by-second fair prices; the shared market-making bot (`bot.rs`,
+  the same one the simulator uses) and 20 background traders keep it
+  liquid. At the final whistle the market settles at 100¢ or 0¢, pauses,
+  and the next game starts.
+- **Safety.** Strict small HTTP/1.1 parser (8 KB headers, 4 KB bodies,
+  no chunked bodies, duplicate JSON keys rejected), bearer-token accounts,
+  a token-bucket limit per player (20 requests/s), and static files served
+  only from `web/` with any `..` or absolute path component refused.
+
+### API
+
+| | |
+|---|---|
+| `POST /api/join` `{"name"}` | new account with $1,000; returns `{account, token}` |
+| `POST /api/orders` `{"side","price","qty","tif"}` | place (`buy_yes`/`sell_yes`/`buy_no`/`sell_no`, 1–99¢, `gtc`/`ioc`); 422 if the risk check fails |
+| `DELETE /api/orders/<id>` | cancel your order |
+| `GET /api/me` | cash, reserved cash, shares, open orders |
+| `GET /api/market`, `/api/state` | book, last trade, game score and clock |
+| `GET /api/stream` | Server-Sent Events: book, trades, game events, settlement |
+
+### Tests and load
+
+`tests/journal.rs` covers round trips, torn writes and corruption.
+`tests/server.rs` starts the real binary and talks to it over TCP: the full
+order flow and every validation error, the rate limit, concurrent traders
+(money conserved afterwards), and `kill -9` mid-game followed by a restart
+with an identical state hash and identical accounts. The CI browser test
+also starts the server and places, fills and cancels real orders from the
+trading page on desktop and mobile.
+
+`cargo run --release --bin loadtest -- 127.0.0.1:8123 <clients> <secs>`,
+each request a new order, every reply fsynced first:
+
+| clients | requests/s | p50 | p99 |
+|---:|---:|---:|---:|
+| 1 | ~4,300 | 0.22 ms | — |
+| 8 | ~27,000 | — | — |
+| 32 | ~40,000 | 0.78 ms | 1.7 ms |
+
+Throughput rises with clients because more orders share each fsync. Many
+of the orders in a long run are refused by the risk check once the test
+accounts run out of cash; those replies go through the same path.
