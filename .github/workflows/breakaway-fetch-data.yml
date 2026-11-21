@@ -1,0 +1,33 @@
+# Breakaway: downloads NHL play-by-play into breakaway/data/ and commits it back.
+# Triggered by editing breakaway/pipeline/SEASONS (the list of seasons to fetch).
+name: breakaway-fetch-data
+on:
+  push:
+    branches: [breakaway]
+    paths: [breakaway/pipeline/SEASONS]
+permissions:
+  contents: write
+concurrency:
+  group: breakaway-fetch-data
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    defaults:
+      run:
+        working-directory: breakaway
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python pipeline/fetch_games.py $(cat pipeline/SEASONS)
+      - name: Commit data
+        run: |
+          git config user.name "breakaway-bot"
+          git config user.email "breakaway-bot@users.noreply.github.com"
+          git add data
+          git commit -m "breakaway data: $(tr '\n' ' ' < pipeline/SEASONS)" || echo "no changes"
+          git pull --rebase origin breakaway
+          git push origin HEAD:breakaway
