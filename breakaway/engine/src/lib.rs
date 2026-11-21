@@ -21,6 +21,8 @@
 //!   highest set bit and the best ask the lowest, so finding the top of book
 //!   is a single instruction.
 
+pub mod exchange;
+
 pub type OrderId = u64;
 pub type AccountId = u32;
 
@@ -194,6 +196,11 @@ impl Engine {
 
     pub fn resting_orders(&self) -> usize {
         self.nodes.len() - self.free.len()
+    }
+
+    /// The id the next accepted order will get.
+    pub fn next_order_id(&self) -> OrderId {
+        self.next_id
     }
 
     pub fn commands_applied(&self) -> u64 {

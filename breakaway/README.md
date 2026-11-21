@@ -9,9 +9,11 @@ penalty and pulled goalie.
 **Step 2 (in progress): the exchange.** The matching engine is done
 ([engine/](engine/)): a zero-dependency Rust order book, checked event-for-event
 against a reference implementation on 10 million random commands, running at
-about 57 million commands a second. Next: play-money accounts and risk checks,
-a market-making bot that quotes around the win-probability model, and hooking
-markets into the replay.
+about 57 million commands a second. Play-money accounts are done too: fully
+collateralised escrow, pre-trade risk checks and settlement, with money
+conservation verified after every command (about 25 million commands a second
+with risk checks on). Next: a market-making bot that quotes around the
+win-probability model, and hooking markets into the replay.
 
 ## Layout
 

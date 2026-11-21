@@ -8,6 +8,7 @@
 //! stream is recorded once, then a fresh engine replays it, so random-number
 //! generation is not timed. The engine is single-threaded by design.
 
+use breakaway_engine::exchange::{ExCommand, Exchange};
 use breakaway_engine::*;
 use std::time::Instant;
 
@@ -150,6 +151,36 @@ fn main() {
     }
     lat.sort_unstable();
 
+    // ---- the same flow through the full exchange: accounts, risk checks, escrow
+    let mut ex_cmds: Vec<ExCommand> = (0..1000).map(|a| ExCommand::Deposit { account: a, cents: 1_000_000_000 }).collect();
+    ex_cmds.extend(cmds.iter().map(|c| match *c {
+        Command::Place { account, side, price, qty, tif } => ExCommand::Place { account, side, price, qty, tif },
+        Command::Cancel { account, order_id } => ExCommand::Cancel { account, order_id },
+    }));
+    let mut ex_best = f64::MAX;
+    for _ in 0..3 {
+        let mut x = Exchange::new();
+        let mut out = Vec::with_capacity(64);
+        let t0 = Instant::now();
+        for c in &ex_cmds {
+            out.clear();
+            x.apply(c, &mut out);
+        }
+        ex_best = ex_best.min(t0.elapsed().as_secs_f64());
+        x.check().expect("exchange invariants after benchmark");
+        assert_eq!(x.engine().state_hash(), reference.state_hash(), "risk layer must not change matching");
+    }
+    let mut x = Exchange::new();
+    let mut out = Vec::with_capacity(64);
+    let mut ex_lat = Vec::with_capacity(ex_cmds.len());
+    for c in &ex_cmds {
+        out.clear();
+        let a = Instant::now();
+        x.apply(c, &mut out);
+        ex_lat.push((a.elapsed().as_nanos() as u32).saturating_sub(overhead));
+    }
+    ex_lat.sort_unstable();
+
     println!("Breakaway matching engine benchmark");
     println!("  machine           {} ({} threads available; engine uses 1)", cpu_model(), std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1));
     println!("  commands          {} ({} limit, {} immediate-or-cancel, {} cancels)", n, kinds[0], kinds[1], kinds[2]);
@@ -161,4 +192,9 @@ fn main() {
         println!("    {:<7} {:>6} ns", label, pct(&lat, p));
     }
     println!("    max     {:>6} ns", lat[lat.len() - 1]);
+    println!("  with accounts, risk checks and escrow (same flow, well-funded accounts):");
+    println!("    throughput {:.2} million commands/sec", ex_cmds.len() as f64 / ex_best / 1e6);
+    for (label, p) in [("p50", 0.5), ("p99", 0.99), ("p99.9", 0.999)] {
+        println!("    {:<7} {:>6} ns", label, pct(&ex_lat, p));
+    }
 }
