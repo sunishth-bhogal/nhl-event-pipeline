@@ -7,6 +7,9 @@
 //! replay page. Seeded by the game id, so every run is identical.
 //!
 //! Participants
+//! Snapshots (quotes and book) are taken every 5 game seconds, together, so
+//! the page's bid/ask always matches its order book.
+//!
 //! * Market maker (account 0): sees the fair price 3 seconds late. Quotes two
 //!   levels a side, widens its spread when the price has been jumping, and
 //!   shades its quotes against its inventory.
@@ -200,7 +203,7 @@ fn simulate(id: &str, home_won: bool, fair: &[f64]) -> String {
             let (bb, ba) = (x.engine().best_bid(), x.engine().best_ask());
             let _ = write!(tape.quotes, "[{sec},{},{},{}],", bb.map_or(-1, |v| v as i32), ba.map_or(-1, |v| v as i32), tape.last);
         }
-        if sec % 10 == 0 || sec + 1 == fair.len() {
+        if sec % 5 == 0 || sec + 1 == fair.len() {
             let fmt = |lv: Vec<(u8, u64, u32)>| lv.iter().map(|(p, q, _)| format!("[{p},{q}]")).collect::<Vec<_>>().join(",");
             let _ = write!(tape.book, "[{sec},[{}],[{}]],", fmt(x.engine().depth(Side::Buy, 6)), fmt(x.engine().depth(Side::Sell, 6)));
         }

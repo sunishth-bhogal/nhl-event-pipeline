@@ -12,8 +12,11 @@ against a reference implementation on 10 million random commands, running at
 about 57 million commands a second. Play-money accounts are done too: fully
 collateralised escrow, pre-trade risk checks and settlement, with money
 conservation verified after every command (about 25 million commands a second
-with risk checks on). Next: a market-making bot that quotes around the
-win-probability model, and hooking markets into the replay.
+with risk checks on). And every replay now has a market: a market-making bot
+and simulated traders trade the "home wins" contract through the real
+exchange while the game plays, and the page shows the market price next to
+the model, the order book, trades and the bot's P&L. Next: real people
+trading (a gateway in front of the exchange) and live games.
 
 ## Layout
 
@@ -34,6 +37,8 @@ Data comes from the NHL's public (undocumented) web API, fetched gently.
 ```
 python3 model/train.py          # train + evaluate -> model/wp_model.json, model/report.json
 python3 model/export_games.py   # featured replays -> web/games/
+python3 model/fair_paths.py     # second-by-second fair price per featured game
+(cd engine && cargo run --release --bin simulate -- data/fair ../web/markets)   # simulated markets
 cd web && python3 -m http.server 8000   # open http://localhost:8000
 python3 tests/test_fetch.py && python3 tests/test_parity.py
 ```

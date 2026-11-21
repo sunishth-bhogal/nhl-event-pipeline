@@ -243,7 +243,7 @@
     let v = 0;
     m.cumVol = m.trades.map((tr) => (v += tr[2]));
     $("mkTitle").textContent = `${g.home.abbrev} wins`;
-    $("mkHome").textContent = g.home.name;
+    $("mkHome").textContent = g.home.abbrev;
   }
 
   function money(c) {

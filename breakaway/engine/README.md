@@ -101,3 +101,27 @@ Latencies have the timer's own cost (~21 ns) subtracted. The risk layer
 roughly halves throughput (every fill updates two accounts and the escrow);
 the benchmark checks it produces the exact same matches as the bare engine.
 No network or persistence yet.
+
+## Simulated markets (`src/bin/simulate.rs`)
+
+`cargo run --release --bin simulate -- data/fair ../web/markets`
+
+For each featured replay, runs a market through the full exchange on the
+game's second-by-second fair price (from the win-probability model):
+
+* **Market maker** (account 0) sees the fair price 3 seconds late, requotes
+  every 2 seconds at two levels a side, widens its spread with recent
+  volatility and shades its quotes against its inventory. It stops quoting
+  once a game is all but decided.
+* **Sharp traders** see the true price immediately and take any quote more than
+  2¢ off, mostly in the seconds after a goal, which is where the market maker
+  loses money.
+* **Noise traders** trade on a rough guess (fair ± ~6¢): they take quotes their
+  guess is through, otherwise post limit orders that expire after 1–5 minutes.
+
+Each market settles at the final whistle; the run asserts every exchange
+invariant and that P&L across all participants sums to zero. Seeded by game
+id, so output is identical every run. Across the 11 featured games: about
+1,492 trades and 10,432 contracts per game, the market's midpoint typically within
+~2¢ of the model with a 3–4¢ spread. In comeback games the sharps, who trade
+on the model, lose: the model was confidently wrong about who would win.
