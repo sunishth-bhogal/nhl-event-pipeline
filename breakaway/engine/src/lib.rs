@@ -21,7 +21,9 @@
 //!   highest set bit and the best ask the lowest, so finding the top of book
 //!   is a single instruction.
 
+pub mod bot;
 pub mod exchange;
+pub mod journal;
 
 pub type OrderId = u64;
 pub type AccountId = u32;

@@ -1,0 +1,46 @@
+/* Trade page additions on top of styles.css */
+.toplink{ color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+.toplink:hover{ color: var(--ink); }
+.brand-tag--live.is-on{ color: #3DDC97; border-color: rgba(61,220,151,.4); }
+.brand-tag--live.is-off{ color: #FF7A72; border-color: rgba(255,122,114,.4); }
+.tgrid{ display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; }
+.tgrid--3{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fig--trade{ height: clamp(220px, 28vw, 330px); }
+.muted{ color: var(--faint); font-weight: 500; text-transform: none; letter-spacing: 0; }
+.hint{ margin: 0 0 14px; color: #C6D0E2; font-size: 14px; }
+.btn--primary{ background: var(--ink); color: var(--bg); border: 0; font-weight: 700; }
+.btn--primary:hover{ background: #fff; }
+.btn--primary:disabled{ opacity: .5; cursor: default; }
+.btn--block{ width: 100%; }
+.side-toggle{ display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.sd{ display: grid; gap: 2px; min-height: 56px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel-2); color: var(--muted); font: inherit; font-weight: 800; font-size: 16px; cursor: pointer; }
+.sd small{ font-weight: 500; font-size: 11.5px; }
+.sd--buy.on{ background: rgba(61,220,151,.14); border-color: #3DDC97; color: #6BE5AE; }
+.sd--sell.on{ background: rgba(255,122,114,.14); border-color: #FF7A72; color: #FF9A93; }
+.sd:focus-visible, .fld input:focus-visible, .chk input:focus-visible, .ladder--click li:focus-visible, .orders button:focus-visible{ outline: 2px solid var(--home); outline-offset: 2px; }
+.fld{ display: grid; gap: 6px; margin-bottom: 12px; font-size: 13px; color: var(--muted); }
+.inp{ position: relative; display: block; }
+.inp input{ width: 100%; min-height: 46px; padding: 0 34px 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); font: inherit; font-size: 16px; font-variant-numeric: tabular-nums; }
+.inp em{ position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-style: normal; color: var(--muted); }
+.chk{ display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 13.5px; color: #C6D0E2; cursor: pointer; }
+.chk input{ width: 18px; height: 18px; accent-color: var(--home); }
+.preview{ margin: 6px 0 14px; font-size: 13px; color: var(--muted); min-height: 3em; }
+.preview b{ color: var(--ink); }
+.msg{ margin: 10px 0 0; font-size: 13.5px; min-height: 1.5em; }
+.msg.ok{ color: #6BE5AE; }
+.msg.bad{ color: #FF9A93; }
+.ladder--click li{ cursor: pointer; }
+.ladder--click li:hover:not(.spread){ background: var(--panel-2); }
+.acct{ margin: 0 0 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.acct div{ padding: 8px 12px; border-radius: 12px; background: var(--panel-2); }
+.acct dt{ font-size: 12px; color: var(--muted); }
+.acct dd{ margin: 2px 0 0; font-family: var(--display); font-weight: 700; font-size: 21px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.acct dd.pos{ color: #6BE5AE; }
+.acct dd.neg{ color: #FF9A93; }
+.orders{ list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.orders li{ display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 4px 4px 4px 10px; border-radius: 8px; background: var(--panel-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.orders li.empty{ background: none; padding: 0; }
+.orders button{ min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.orders button:hover{ border-color: #FF7A72; color: #FF9A93; }
+@media (max-width: 1100px){ .tgrid--3{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .tgrid--3 > :last-child{ grid-column: 1 / -1; } }
+@media (max-width: 860px){ .tgrid, .tgrid--3{ grid-template-columns: minmax(0, 1fr); } .tgrid--3 > :last-child{ grid-column: auto; } }

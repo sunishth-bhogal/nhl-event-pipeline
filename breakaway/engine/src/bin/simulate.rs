@@ -22,6 +22,7 @@
 //! Every order goes through risk checks, matching and escrow, and the market
 //! settles at the final whistle.
 
+use breakaway_engine::bot::MarketMaker;
 use breakaway_engine::exchange::{Account, ExCommand, ExEvent, Exchange};
 use breakaway_engine::*;
 use std::fmt::Write as _;
@@ -80,10 +81,9 @@ fn simulate(id: &str, home_won: bool, fair: &[f64]) -> String {
     }
     let deposits_traders = |range: std::ops::Range<u32>| range.len() as i64 * trader_deposit;
 
-    let mut mm_orders: Vec<OrderId> = Vec::new();
+    let mut mm = MarketMaker::new(MM);
     let mut resting: Vec<(OrderId, AccountId, usize)> = Vec::new(); // noise orders + expiry second
     let mut tape = Tape { quotes: String::new(), book: String::new(), trades: String::new(), mm: String::new(), n_trades: 0, volume: 0, last: -1 };
-    let mut last_quote = (0u8, 0u8, 0i64);
     let mut rejected = 0u64;
 
     let send = |x: &mut Exchange, cmd: ExCommand, sec: usize, out: &mut Vec<ExEvent>, tape: &mut Tape, rejected: &mut u64| -> Option<OrderId> {
@@ -112,29 +112,13 @@ fn simulate(id: &str, home_won: bool, fair: &[f64]) -> String {
         if sec % 2 == 0 {
             let seen = fair[sec.saturating_sub(MM_DELAY)];
             let past = fair[sec.saturating_sub(MM_DELAY + 20)];
-            let vol = (seen - past).abs();
-            let a = *x.account(MM).unwrap();
-            let inventory = a.yes_shares() - a.no_shares();
-            let half = (1.5 + vol * 0.6).min(12.0);
-            let skew = (inventory as f64 / 40.0).clamp(-6.0, 6.0);
-            let bid = (seen - half - skew).floor().clamp(1.0, 98.0) as u8;
-            let ask = ((seen + half - skew).ceil().clamp(2.0, 99.0) as u8).max(bid + 1);
-            if (bid, ask, inventory) != last_quote {
-                for oid in mm_orders.drain(..) {
-                    send(&mut x, ExCommand::Cancel { account: MM, order_id: oid }, sec, &mut out, &mut tape, &mut rejected);
-                }
-                // stop quoting once the game is all but decided
-                if seen > 1.0 && seen < 99.0 {
-                    for (p, q, s) in [(bid, 40, Side::Buy), (bid.saturating_sub(3).max(1), 80, Side::Buy), (ask, 40, Side::Sell), ((ask + 3).min(99), 80, Side::Sell)] {
-                        let cmd = ExCommand::Place { account: MM, side: s, price: p, qty: q, tif: TimeInForce::Gtc };
-                        if let Some(oid) = send(&mut x, cmd, sec, &mut out, &mut tape, &mut rejected) {
-                            if x.engine().order(oid).is_some() {
-                                mm_orders.push(oid);
-                            }
-                        }
+            for cmd in mm.plan(&x, seen, past) {
+                let placing = matches!(cmd, ExCommand::Place { .. });
+                if let Some(oid) = send(&mut x, cmd, sec, &mut out, &mut tape, &mut rejected) {
+                    if placing && x.engine().order(oid).is_some() {
+                        mm.track(oid);
                     }
                 }
-                last_quote = (bid, ask, inventory);
             }
         }
 

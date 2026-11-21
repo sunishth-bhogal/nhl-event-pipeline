@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breakaway · Trade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="trade.css">
+</head>
+<body>
+<div class="goal-light" id="goalLight" aria-hidden="true"></div>
+<header class="top">
+  <div class="brand">
+    <span class="brand-mark">BREAKAWAY</span>
+    <span class="brand-tag brand-tag--live" id="conn">Connecting…</span>
+  </div>
+  <a class="toplink" href="index.html">Replays</a>
+</header>
+
+<main class="wrap">
+  <p class="why" id="why">A replayed NHL game runs at high speed. Trade a contract that pays $1 if the home team wins, against a market-making bot and other players. Play money only.</p>
+
+  <section class="board" aria-label="Scoreboard">
+    <div class="team team--away" id="awayBox">
+      <span class="team-abbrev" id="awayAbbrev">—</span>
+      <span class="team-name" id="awayName"></span>
+      <span class="team-sog" id="awayLabel">away</span>
+      <span class="team-score" id="awayScore">0</span>
+    </div>
+    <div class="clock">
+      <span class="clock-period" id="period">—</span>
+      <span class="clock-time" id="clock">—</span>
+      <span class="strength" id="status">live</span>
+    </div>
+    <div class="team team--home" id="homeBox">
+      <span class="team-score" id="homeScore">0</span>
+      <span class="team-abbrev" id="homeAbbrev">—</span>
+      <span class="team-name" id="homeName"></span>
+      <span class="team-sog">home</span>
+    </div>
+  </section>
+
+  <div class="tgrid">
+    <section class="card" aria-label="Price chart">
+      <div class="odds">
+        <div class="odds-side odds--away"><span class="odds-num" id="lastPx">—</span><span class="odds-lab">last trade</span></div>
+        <div class="odds-bar" aria-hidden="true"><span id="oddsFill"></span></div>
+        <div class="odds-side odds--home"><span class="odds-num" id="modelPx">—</span><span class="odds-lab" id="modelLab">model</span></div>
+      </div>
+      <div class="fig fig--trade" id="fig"><svg id="chart" role="img" aria-label="Price chart"></svg></div>
+      <p class="legend"><span class="lg lg--model"></span>Model <span class="lg lg--market"></span>Market (since you opened this page)</p>
+    </section>
+
+    <section class="card ticket" aria-label="Order ticket">
+      <h2 class="card-title">Trade <span id="tkTeam">home</span> wins</h2>
+      <div id="joinBox">
+        <p class="hint">Join this game to get $1,000 of play money. A new game starts a new account.</p>
+        <button type="button" class="btn btn--primary" id="joinBtn">Join this game</button>
+      </div>
+      <form id="ticket" hidden>
+        <div class="side-toggle" role="radiogroup" aria-label="Side">
+          <button type="button" role="radio" aria-checked="true" class="sd sd--buy on" data-side="buy">Buy<small id="buyHint">home wins</small></button>
+          <button type="button" role="radio" aria-checked="false" class="sd sd--sell" data-side="sell">Sell<small id="sellHint">home doesn't win</small></button>
+        </div>
+        <label class="fld"><span>Price</span><span class="inp"><input id="price" type="number" inputmode="numeric" min="1" max="99" step="1" value="50" required><em>¢</em></span></label>
+        <label class="fld"><span>Contracts</span><span class="inp"><input id="qty" type="number" inputmode="numeric" min="1" max="100000" step="1" value="10" required></span></label>
+        <label class="chk"><input id="ioc" type="checkbox"> Fill now or cancel (don't rest in the book)</label>
+        <p class="preview" id="preview"></p>
+        <button type="submit" class="btn btn--primary btn--block" id="placeBtn">Place order</button>
+        <p class="msg" id="msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </div>
+
+  <div class="tgrid tgrid--3">
+    <section class="card" aria-label="Order book">
+      <h2 class="card-title">Order book <small class="muted">click a price to use it</small></h2>
+      <ol class="ladder ladder--click" id="ladder"></ol>
+    </section>
+    <section class="card" aria-label="Your account">
+      <h2 class="card-title">Your account</h2>
+      <dl class="acct" id="acct"><div><dt>Status</dt><dd>Not joined</dd></div></dl>
+      <h3 class="mini-title">Open orders</h3>
+      <ol class="orders" id="orders"><li class="empty">None</li></ol>
+    </section>
+    <section class="card" aria-label="Trades">
+      <h2 class="card-title">Trades</h2>
+      <ol class="tape" id="tape"><li class="empty" style="background:none">Waiting for trades…</li></ol>
+    </section>
+  </div>
+
+  <p class="foot">Play money only. Orders are matched by Breakaway's Rust engine with pre-trade risk checks, and every order is written to a journal on disk before you get a reply.</p>
+</main>
+<script src="wp.js"></script>
+<script src="teams.js"></script>
+<script src="trade.js"></script>
+</body>
+</html>

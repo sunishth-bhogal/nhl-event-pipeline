@@ -4,7 +4,7 @@ name: breakaway-shots
 on:
   push:
     branches: [breakaway]
-    paths: [breakaway/web/**, breakaway/tests/shots.mjs]
+    paths: [breakaway/web/**, breakaway/tests/shots.mjs, breakaway/engine/src/**]
 permissions:
   contents: write
 jobs:
@@ -17,11 +17,14 @@ jobs:
         with:
           node-version: 20
       - run: npm i --no-save --no-package-lock --prefix /tmp/pw playwright@1.48.2 && /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
+      - run: cargo build --release --bin server
+        working-directory: breakaway/engine
       - continue-on-error: true
         run: |
-          (cd breakaway/web && python3 -m http.server 8123 >/dev/null 2>&1 &)
+          (cd breakaway/engine && ./target/release/server --port 8123 --speed 30 --data /tmp/bk > /tmp/server.log 2>&1 &)
           sleep 2
           NODE_PATH=/tmp/pw/node_modules node breakaway/tests/shots.mjs
+          cp /tmp/server.log shots/server.log || true
       - if: always()
         run: |
           mkdir -p shots && cd shots
