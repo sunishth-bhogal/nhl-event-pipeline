@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breakaway · Replay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="goal-light" id="goalLight" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="brand">
+    <span class="brand-mark">BREAKAWAY</span>
+    <span class="brand-tag">Replay</span>
+  </div>
+  <label class="picker">
+    <span class="picker-label">Game</span>
+    <select id="gamePicker" aria-label="Choose a game to replay"></select>
+  </label>
+</header>
+
+<main class="wrap">
+  <p class="why" id="why"></p>
+
+  <section class="board" aria-label="Scoreboard">
+    <div class="team team--away" id="awayBox">
+      <span class="team-abbrev" id="awayAbbrev">—</span>
+      <span class="team-name" id="awayName"></span>
+      <span class="team-sog"><span id="awaySog">0</span> shots</span>
+      <span class="team-score" id="awayScore">0</span>
+    </div>
+    <div class="clock">
+      <span class="clock-period" id="period">1st</span>
+      <span class="clock-time" id="clock">20:00</span>
+      <span class="strength" id="strength">5 on 5</span>
+    </div>
+    <div class="team team--home" id="homeBox">
+      <span class="team-score" id="homeScore">0</span>
+      <span class="team-abbrev" id="homeAbbrev">—</span>
+      <span class="team-name" id="homeName"></span>
+      <span class="team-sog"><span id="homeSog">0</span> shots</span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="card chart-card" aria-label="Win probability">
+      <div class="odds">
+        <div class="odds-side odds--away">
+          <span class="odds-num" id="awayPct">50%</span>
+          <span class="odds-lab" id="awayPctLab">to win</span>
+        </div>
+        <div class="odds-bar" aria-hidden="true"><span id="oddsFill"></span></div>
+        <div class="odds-side odds--home">
+          <span class="odds-num" id="homePct">50%</span>
+          <span class="odds-lab" id="homePctLab">to win</span>
+        </div>
+      </div>
+      <div class="fig" id="fig"><svg id="chart" role="img" aria-label="Win probability chart"></svg></div>
+
+      <div class="controls">
+        <button type="button" class="btn btn--play" id="playBtn" aria-label="Play">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+        </button>
+        <input type="range" id="scrub" min="0" max="3600" step="1" value="0" aria-label="Game time">
+        <div class="speeds" role="group" aria-label="Replay speed">
+          <button type="button" data-speed="30">30×</button>
+          <button type="button" data-speed="60" class="on">60×</button>
+          <button type="button" data-speed="180">180×</button>
+        </div>
+        <button type="button" class="btn btn--ghost" id="nextGoal">Next goal →</button>
+      </div>
+    </section>
+
+    <section class="card feed-card" aria-label="Play by play">
+      <h2 class="card-title">Play by play</h2>
+      <ol class="feed" id="feed"></ol>
+    </section>
+  </div>
+
+  <section class="card swings-card" aria-label="Biggest swings so far">
+    <h2 class="card-title">Biggest swings so far</h2>
+    <ol class="swings" id="swings"><li class="empty">Press play. The biggest moments show up here as they happen.</li></ol>
+  </section>
+
+  <section class="card model-card" aria-label="How the model works">
+    <div class="model-copy">
+      <h2 class="card-title">How the win probability works</h2>
+      <p>After every play, a logistic-regression model looks at the score, the time left, power plays, a pulled goalie and each team's pregame rating, and estimates who wins. Ratings only use games played before that night, and the model is tested on a full season it never saw.</p>
+      <dl class="metrics" id="metrics"></dl>
+    </div>
+    <figure class="calib">
+      <svg id="calib" viewBox="0 0 220 220" role="img" aria-label="Calibration chart"></svg>
+      <figcaption>Calibration on the held-out season: when the model said X%, how often that team actually won.</figcaption>
+    </figure>
+  </section>
+
+  <p class="foot">Play-by-play from the NHL's public web API. Breakaway is a personal project, not affiliated with the NHL.</p>
+</main>
+
+<div class="sr-only" aria-live="polite" id="announce"></div>
+<script src="wp.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

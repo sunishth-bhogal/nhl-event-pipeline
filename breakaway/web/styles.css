@@ -1,0 +1,218 @@
+/* Breakaway replay: an arena at night. Deep ice-navy ground, broadcast
+   scoreboard type, team colours carry the data, red goal light for goals. */
+:root{
+  color-scheme: dark;
+  --bg: #080C18;
+  --panel: #0F1628;
+  --panel-2: #141D33;
+  --line: #1F2A44;
+  --ink: #EAF0FA;
+  --muted: #8C99B3;
+  --faint: #56627C;
+  --goal: #FF3B30;
+  --home: #4A8FE7;
+  --away: #E8EEF6;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+}
+*{ box-sizing: border-box; min-width: 0; }
+html, body{ margin: 0; background: var(--bg); color: var(--ink); }
+body{
+  font: 15px/1.5 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(80% 50% at 50% -10%, rgba(74,143,231,.12), transparent 70%),
+    var(--bg);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+.sr-only{ position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- header ---------- */
+.top{
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 18px max(4vw, 16px);
+  border-bottom: 1px solid var(--line);
+}
+.brand{ display: flex; align-items: center; gap: 12px; }
+.brand-mark{ font-family: var(--display); font-weight: 800; font-size: 26px; letter-spacing: .08em; }
+.brand-tag{
+  font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted);
+}
+.picker{ display: flex; align-items: center; gap: 10px; }
+.picker-label{ font-size: 12px; color: var(--muted); }
+.picker select{
+  max-width: min(560px, 78vw);
+  min-height: 44px; padding: 0 36px 0 14px;
+  border-radius: 10px; border: 1px solid var(--line);
+  background: var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238C99B3' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 14px center;
+  color: var(--ink); font: inherit; font-size: 14px;
+  appearance: none; cursor: pointer;
+}
+.picker select:focus-visible, .btn:focus-visible, .speeds button:focus-visible, input[type=range]:focus-visible{
+  outline: 2px solid var(--home); outline-offset: 2px;
+}
+
+.wrap{ max-width: 1280px; margin: 0 auto; padding: 18px max(4vw, 16px) 48px; }
+.why{ margin: 0 0 12px; color: var(--muted); font-size: 13px; min-height: 1.5em; }
+
+/* ---------- scoreboard ---------- */
+.board{
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  border: 1px solid var(--line); border-radius: 18px;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  overflow: hidden;
+}
+.team{
+  position: relative;
+  display: grid; align-items: center; column-gap: 16px;
+  padding: 16px clamp(14px, 2.4vw, 28px);
+  transition: background-color .4s ease;
+}
+.team--away{ grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "abbrev name score" "abbrev sog score"; }
+.team--home{ grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "score name abbrev" "score sog abbrev"; text-align: right; }
+.team::before{ content: ""; position: absolute; top: 0; bottom: 0; width: 4px; background: var(--c); }
+.team--away::before{ left: 0; }
+.team--home::before{ right: 0; }
+.team--away{ --c: var(--away); }
+.team--home{ --c: var(--home); }
+.team-abbrev{ grid-area: abbrev; font-family: var(--display); font-weight: 800; font-size: clamp(28px, 4vw, 40px); letter-spacing: .04em; color: var(--c); }
+.team-name{ grid-area: name; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.team-sog{ grid-area: sog; font-size: 12px; color: var(--muted); }
+.team-score{ grid-area: score; font-family: var(--display); font-weight: 800; font-size: clamp(48px, 7vw, 76px); line-height: 1; font-variant-numeric: tabular-nums; }
+.team.is-goal{ background: rgba(255,59,48,.16); }
+.team.is-goal .team-score{ color: var(--goal); }
+.clock{
+  display: grid; place-content: center; justify-items: center; gap: 2px;
+  padding: 10px clamp(12px, 2vw, 26px);
+  border-inline: 1px solid var(--line);
+  background: rgba(0,0,0,.18);
+  min-width: 120px;
+}
+.clock-period{ font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.clock-time{ font-family: var(--display); font-weight: 700; font-size: 36px; line-height: 1; font-variant-numeric: tabular-nums; }
+.strength{ margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: var(--panel-2); color: var(--muted); white-space: nowrap; }
+.strength.is-pp{ background: rgba(255,196,0,.14); color: #FFC400; }
+.strength.is-en{ background: rgba(255,59,48,.14); color: #FF7A72; }
+
+/* ---------- layout ---------- */
+.grid{ display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; }
+.card{ border: 1px solid var(--line); border-radius: 18px; background: var(--panel); padding: clamp(14px, 2vw, 22px); }
+.card-title{ margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- odds + chart ---------- */
+.odds{ display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; }
+.odds-side{ display: grid; }
+.odds--home{ text-align: right; }
+.odds-num{ font-family: var(--display); font-weight: 800; font-size: clamp(36px, 5vw, 56px); line-height: 1; font-variant-numeric: tabular-nums; }
+.odds--away .odds-num{ color: var(--away); }
+.odds--home .odds-num{ color: var(--home); }
+.odds-lab{ font-size: 12px; color: var(--muted); }
+.odds-bar{ position: relative; height: 10px; border-radius: 999px; background: var(--away); overflow: hidden; }
+.odds-bar span{ position: absolute; inset: 0 0 0 auto; width: 50%; background: var(--home); transition: width .35s ease; }
+
+.fig{ position: relative; height: clamp(260px, 36vw, 400px); margin-top: 14px; }
+.fig svg{ position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.c-grid{ stroke: var(--line); stroke-width: 1; }
+.c-mid{ stroke: #3A4766; stroke-dasharray: 3 4; }
+.c-axis{ fill: var(--faint); font-size: 11px; }
+.c-team{ font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .06em; }
+.c-line{ fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linejoin: round; }
+.c-head{ fill: var(--ink); }
+.c-pulse{ fill: var(--ink); opacity: .25; transform-box: fill-box; transform-origin: center; animation: pulse 1.6s ease-out infinite; }
+@keyframes pulse{ from{ transform: scale(1); opacity: .35; } to{ transform: scale(3.2); opacity: 0; } }
+.c-goal{ stroke: var(--bg); stroke-width: 2; }
+.c-goal-lab{ font-family: var(--display); font-weight: 700; font-size: 12px; fill: var(--ink); }
+.c-pen{ stroke: #FFC400; stroke-width: 2; opacity: .7; }
+
+/* ---------- controls ---------- */
+.controls{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+.btn{
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 16px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--ink);
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.btn:hover{ border-color: #33416A; }
+.btn--play{ width: 48px; height: 48px; padding: 0; background: var(--ink); color: var(--bg); border: 0; }
+.btn--play svg{ fill: currentColor; }
+.btn--ghost{ background: transparent; }
+#scrub{ flex: 1 1 200px; accent-color: var(--home); height: 44px; }
+.speeds{ display: inline-flex; padding: 3px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); }
+.speeds button{ min-height: 38px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.speeds button.on{ background: var(--ink); color: var(--bg); }
+
+/* ---------- feed ---------- */
+.feed-card{ display: flex; flex-direction: column; max-height: calc(clamp(260px, 36vw, 400px) + 170px); }
+.feed{ list-style: none; margin: 0; padding: 0; overflow-y: auto; display: grid; gap: 2px; align-content: start; }
+.feed li{
+  display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 10px; align-items: baseline;
+  padding: 9px 10px; border-radius: 10px;
+  font-size: 13.5px;
+  animation: feedIn .35s ease both;
+}
+@keyframes feedIn{ from{ opacity: 0; transform: translateY(-6px); } }
+.feed .t{ color: var(--faint); font-variant-numeric: tabular-nums; font-size: 12px; }
+.feed .what b{ font-weight: 700; }
+.feed .d{ font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.feed li.goal{ background: rgba(255,59,48,.1); }
+.feed li.goal .what::before{ content: "GOAL · "; color: var(--goal); font-weight: 800; letter-spacing: .04em; }
+.feed li.marker{ color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.feed li.marker .what{ text-align: left; }
+.empty{ color: var(--muted); font-size: 13px; padding: 6px 0; }
+
+/* ---------- swings ---------- */
+.swings-card{ margin-top: 16px; }
+.swings{ list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 10px; }
+.swings li:not(.empty){ padding: 12px 14px; border-radius: 12px; background: var(--panel-2); border-left: 3px solid var(--c, var(--ink)); }
+.swings .big{ font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1.1; color: var(--c); }
+.swings .sub{ font-size: 13px; color: var(--muted); }
+
+/* ---------- model ---------- */
+.model-card{ margin-top: 16px; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+.model-copy p{ margin: 0 0 16px; color: #C6D0E2; max-width: 62ch; }
+.metrics{ margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.metrics div{ padding: 10px 12px; border-radius: 12px; background: var(--panel-2); }
+.metrics dt{ font-size: 12px; color: var(--muted); }
+.metrics dd{ margin: 2px 0 0; font-family: var(--display); font-weight: 700; font-size: 24px; font-variant-numeric: tabular-nums; }
+.metrics dd small{ font-family: Inter, sans-serif; font-weight: 500; font-size: 12px; color: var(--muted); }
+.calib{ margin: 0; justify-self: center; width: min(260px, 100%); }
+.calib svg{ width: 100%; height: auto; display: block; }
+.calib figcaption{ margin-top: 6px; font-size: 12px; color: var(--muted); text-align: center; }
+.foot{ margin: 24px 0 0; font-size: 12px; color: var(--faint); }
+
+/* ---------- goal light ---------- */
+.goal-light{
+  position: fixed; inset: 0 0 auto 0; height: 4px; z-index: 50;
+  background: var(--goal); box-shadow: 0 0 40px 12px rgba(255,59,48,.55);
+  opacity: 0; pointer-events: none;
+}
+.goal-light.on{ animation: goalLight 1.8s ease-out; }
+@keyframes goalLight{ 0%, 40%{ opacity: 1; } 100%{ opacity: 0; } }
+
+/* ---------- responsive ---------- */
+@media (max-width: 980px){
+  .grid{ grid-template-columns: minmax(0, 1fr); }
+  .feed-card{ max-height: 420px; }
+  .model-card{ grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px){
+  .board{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .clock{ grid-column: 1 / -1; grid-row: 1; border-inline: 0; border-bottom: 1px solid var(--line); grid-auto-flow: column; gap: 10px; align-items: center; min-width: 0; }
+  .clock-time{ font-size: 26px; }
+  .strength{ margin-top: 0; }
+  .team{ padding: 12px 14px; column-gap: 10px; }
+  .team-name{ display: none; }
+  .team--away{ grid-template-areas: "abbrev score" "sog score"; grid-template-columns: minmax(0, 1fr) auto; }
+  .team--home{ grid-template-areas: "score abbrev" "score sog"; grid-template-columns: auto minmax(0, 1fr); }
+  .odds{ gap: 10px; }
+  .controls{ gap: 8px; }
+  #scrub{ order: 5; flex-basis: 100%; }
+}
+@media (prefers-reduced-motion: reduce){
+  .c-pulse{ animation: none; opacity: 0; }
+  .feed li{ animation: none; }
+  .goal-light.on{ animation: none; opacity: 0; }
+  .odds-bar span, .team{ transition: none; }
+}
