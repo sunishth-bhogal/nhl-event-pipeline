@@ -19,7 +19,7 @@ jobs:
       - run: npm i --no-save --no-package-lock --prefix /tmp/pw playwright@1.48.2 && /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
       - continue-on-error: true
         run: |
-          (cd breakaway/web && python3 -m http.server 5060 >/dev/null 2>&1 &)
+          (cd breakaway/web && python3 -m http.server 8123 >/dev/null 2>&1 &)
           sleep 2
           NODE_PATH=/tmp/pw/node_modules node breakaway/tests/shots.mjs
       - if: always()

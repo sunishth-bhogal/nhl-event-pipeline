@@ -4,7 +4,7 @@ import fs from "fs";
 const require = createRequire(process.env.NODE_PATH + "/");
 const { chromium } = require("playwright");
 fs.mkdirSync("shots", { recursive: true });
-const URL = "http://localhost:5060/";
+const URL = "http://localhost:8123/";
 const log = [];
 const browser = await chromium.launch();
 for (const [dev, w, h] of [["desktop", 1440, 900], ["mobile", 390, 844]]) {
