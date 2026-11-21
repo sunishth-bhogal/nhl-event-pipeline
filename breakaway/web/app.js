@@ -84,7 +84,9 @@
         sit: sit || st.sit, so, final, period,
       };
       if (SHOT_KINDS.has(kind) && !so) owner === 1 ? shotsH++ : owner === 0 ? shotsA++ : 0;
-      const pulled =
+      // a goalie pull, but not the bookkeeping events after the game is decided
+      const live = !final && !so && !["PE", "PS"].includes(kind) && !(sec >= 3600 && next.hs !== next.as);
+      const pulled = !live ? -1 :
         (next.sit[3] === "0" && st.sit[3] !== "0") ? 1 :
         (next.sit[0] === "0" && st.sit[0] !== "0") ? 0 : -1;
       const after = wpAt(sec, next);
@@ -304,16 +306,16 @@
   // ---------------------------------------------------------------- model card
   function drawModelCard() {
     if (!report) return;
-    const m = report.model, lead = report.baseline_lead_and_time_only;
+    const m = report.model, pre = report.baseline_pregame_rating_only;
     const cp = report.checkpoints || {};
     const rows = [
       ["Tested on", `${report.test_games.toLocaleString()} <small>games, ${season(report.test_season)}</small>`],
-      ["Brier score (lower is better)", `${m.brier.toFixed(3)} <small>vs ${lead.brier.toFixed(3)} score-and-clock only</small>`],
+      ["Brier score (lower is better)", `${m.brier.toFixed(3)} <small>vs ${pre.brier.toFixed(3)} from pregame ratings alone</small>`],
       ["Favourite won, 5 min left", cp["5 min left"] ? `${Math.round(cp["5 min left"].favourite_won * 100)}%` : "—"],
       ["Favourite won, after the 1st", cp["after 1st"] ? `${Math.round(cp["after 1st"].favourite_won * 100)}%` : "—"],
     ];
     $("metrics").innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
-    const S = 220, P = 26;
+    const S = 220, P = 36;
     const sx = (v) => P + v * (S - P - 8), sy = (v) => S - P - v * (S - P - 8);
     let g = `<rect x="${sx(0)}" y="${sy(1)}" width="${sx(1) - sx(0)}" height="${sy(0) - sy(1)}" fill="none" stroke="#1F2A44"/>`;
     g += `<line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(1)}" y2="${sy(1)}" stroke="#3A4766" stroke-dasharray="3 4"/>`;

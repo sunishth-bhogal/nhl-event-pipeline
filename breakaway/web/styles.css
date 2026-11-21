@@ -123,7 +123,7 @@ body{
 .c-pulse{ fill: var(--ink); opacity: .25; transform-box: fill-box; transform-origin: center; animation: pulse 1.6s ease-out infinite; }
 @keyframes pulse{ from{ transform: scale(1); opacity: .35; } to{ transform: scale(3.2); opacity: 0; } }
 .c-goal{ stroke: var(--bg); stroke-width: 2; }
-.c-goal-lab{ font-family: var(--display); font-weight: 700; font-size: 12px; fill: var(--ink); }
+.c-goal-lab{ font-family: var(--display); font-weight: 700; font-size: 12px; fill: var(--ink); paint-order: stroke; stroke: var(--panel); stroke-width: 4px; stroke-linejoin: round; }
 .c-pen{ stroke: #FFC400; stroke-width: 2; opacity: .7; }
 
 /* ---------- controls ---------- */
@@ -147,13 +147,13 @@ body{
 .feed-card{ display: flex; flex-direction: column; max-height: calc(clamp(260px, 36vw, 400px) + 170px); }
 .feed{ list-style: none; margin: 0; padding: 0; overflow-y: auto; display: grid; gap: 2px; align-content: start; }
 .feed li{
-  display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 10px; align-items: baseline;
+  display: grid; grid-template-columns: 66px minmax(0, 1fr) auto; gap: 10px; align-items: baseline;
   padding: 9px 10px; border-radius: 10px;
   font-size: 13.5px;
   animation: feedIn .35s ease both;
 }
 @keyframes feedIn{ from{ opacity: 0; transform: translateY(-6px); } }
-.feed .t{ color: var(--faint); font-variant-numeric: tabular-nums; font-size: 12px; }
+.feed .t{ color: var(--faint); font-variant-numeric: tabular-nums; font-size: 12px; white-space: nowrap; }
 .feed .what b{ font-weight: 700; }
 .feed .d{ font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .feed li.goal{ background: rgba(255,59,48,.1); }
