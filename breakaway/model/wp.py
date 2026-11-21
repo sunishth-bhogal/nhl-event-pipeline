@@ -24,7 +24,7 @@ REG_FEATURES = [
     "strength_x_time",   # rating gap weighted by the share of the game still to play
     "power_play",        # skater advantage (home - away), e.g. +1 on a home power play
     "power_play_late",   # skater advantage / sqrt(minutes left + 1)
-    "goalie_pulled",     # (away net empty) - (home net empty), scaled toward the end
+    "goalie_pulled",     # trailing team has pulled its goalie (+1 away, -1 home), scaled toward the end
 ]
 OT_FEATURES = ["strength", "power_play"]
 
@@ -46,7 +46,14 @@ def reg_features(sec: float, home: int, away: int, situation: str, elo_diff: flo
         pp -= 1
     if ag == 0:
         pp += 1
-    pulled = (1 - ag) - (1 - hg)
+    # An empty net only means "trailing team pressing" while that team is behind;
+    # right after a tying goal the goalie is often still out, and that is not
+    # the same situation.
+    pulled = 0
+    if ag == 0 and lead > 0:
+        pulled += 1
+    if hg == 0 and lead < 0:
+        pulled -= 1
     root = math.sqrt(mins_left + 1.0)
     strength = elo_diff / 100.0
     return [

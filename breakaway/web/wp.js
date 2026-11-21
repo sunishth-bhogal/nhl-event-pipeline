@@ -16,7 +16,10 @@
     let pp = hsk - ask;
     if (hg === 0) pp -= 1;
     if (ag === 0) pp += 1;
-    const pulled = (1 - ag) - (1 - hg);
+    // empty net only counts while the pulling team is behind (see model/wp.py)
+    let pulled = 0;
+    if (ag === 0 && lead > 0) pulled += 1;
+    if (hg === 0 && lead < 0) pulled -= 1;
     const root = Math.sqrt(minsLeft + 1);
     const strength = eloDiff / 100;
     return [

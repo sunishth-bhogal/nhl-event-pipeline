@@ -1,0 +1,90 @@
+[
+ {
+  "id": 2024030416,
+  "label": "EDM @ FLA \u00b7 2025-06-17 \u00b7 Playoffs",
+  "why": "Stanley Cup clincher",
+  "home": "FLA",
+  "away": "EDM",
+  "date": "2025-06-17"
+ },
+ {
+  "id": 2025030416,
+  "label": "CAR @ VGK \u00b7 2026-06-14 \u00b7 Playoffs",
+  "why": "Stanley Cup clincher",
+  "home": "VGK",
+  "away": "CAR",
+  "date": "2026-06-14"
+ },
+ {
+  "id": 2024021242,
+  "label": "VAN @ DAL \u00b7 2025-04-08 \u00b7 Regular season",
+  "why": "Comeback: VAN won after the model gave them under 1%",
+  "home": "DAL",
+  "away": "VAN",
+  "date": "2025-04-08"
+ },
+ {
+  "id": 2024020145,
+  "label": "SJS @ UTA \u00b7 2024-10-28 \u00b7 Regular season",
+  "why": "Comeback: SJS won after the model gave them under 1%",
+  "home": "UTA",
+  "away": "SJS",
+  "date": "2024-10-28"
+ },
+ {
+  "id": 2024020567,
+  "label": "SEA @ VAN \u00b7 2024-12-28 \u00b7 Regular season",
+  "why": "Comeback: SEA won after the model gave them under 1%",
+  "home": "VAN",
+  "away": "SEA",
+  "date": "2024-12-28"
+ },
+ {
+  "id": 2025020497,
+  "label": "SJS @ PIT \u00b7 2025-12-13 \u00b7 Regular season",
+  "why": "Comeback: SJS won after the model gave them under 1%",
+  "home": "PIT",
+  "away": "SJS",
+  "date": "2025-12-13"
+ },
+ {
+  "id": 2024021152,
+  "label": "TOR @ SJS \u00b7 2025-03-27 \u00b7 Regular season",
+  "why": "One of the wildest games: biggest total swings",
+  "home": "SJS",
+  "away": "TOR",
+  "date": "2025-03-27"
+ },
+ {
+  "id": 2024020043,
+  "label": "LAK @ OTT \u00b7 2024-10-14 \u00b7 Regular season",
+  "why": "One of the wildest games: biggest total swings",
+  "home": "OTT",
+  "away": "LAK",
+  "date": "2024-10-14"
+ },
+ {
+  "id": 2024021155,
+  "label": "VAN @ CBJ \u00b7 2025-03-28 \u00b7 Regular season",
+  "why": "One of the wildest games: biggest total swings",
+  "home": "CBJ",
+  "away": "VAN",
+  "date": "2025-03-28"
+ },
+ {
+  "id": 2025021217,
+  "label": "TOR @ LAK \u00b7 2026-04-04 \u00b7 Regular season",
+  "why": "Leafs game with the most drama",
+  "home": "LAK",
+  "away": "TOR",
+  "date": "2026-04-04"
+ },
+ {
+  "id": 2025021304,
+  "label": "TOR @ OTT \u00b7 2026-04-15 \u00b7 Regular season",
+  "why": "Latest Leafs game",
+  "home": "OTT",
+  "away": "TOR",
+  "date": "2026-04-15"
+ }
+]

@@ -73,12 +73,14 @@ def main():
             seen.add(g["id"])
             picks.append((g, why))
 
-    finals = [g for g in recent if g["type"] == 3 and str(g["id"])[6:8] == "04"]
-    if finals:
-        add(max(finals, key=lambda g: g["id"]), "Stanley Cup clincher")
+    for s in seasons[-2:]:
+        finals = [g for g in games if g["season"] == s and g["type"] == 3 and str(g["id"])[6:8] == "04"]
+        if finals:
+            add(max(finals, key=lambda g: g["id"]), "Stanley Cup clincher")
     for g, d in sorted(scored, key=lambda gd: gd[1]["winner_low"])[:4]:
         who = g["home"]["abbrev"] if g["final"]["home"] > g["final"]["away"] else g["away"]["abbrev"]
-        add(g, f"Comeback: {who} won after the model gave them {d['winner_low'] * 100:.0f}%")
+        low = d["winner_low"] * 100
+        add(g, f"Comeback: {who} won after the model gave them {'under 1' if low < 1 else round(low)}%")
     for g, d in sorted(scored, key=lambda gd: -gd[1]["swing"])[:3]:
         add(g, "One of the wildest games: biggest total swings")
     leafs = [(g, d) for g, d in scored if "TOR" in (g["home"]["abbrev"], g["away"]["abbrev"])]

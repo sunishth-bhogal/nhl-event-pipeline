@@ -1,0 +1,113 @@
+{
+  "test_season": 20252026,
+  "train_games": 5599,
+  "test_games": 1394,
+  "test_states_weighting": "each game state weighted by seconds of game time it lasted",
+  "model": {
+    "brier": 0.17657,
+    "log_loss": 0.51598
+  },
+  "benchmark_gradient_boosting": {
+    "brier": 0.17871,
+    "log_loss": 0.52303
+  },
+  "baseline_pregame_rating_only": {
+    "brier": 0.24937,
+    "log_loss": 0.69205
+  },
+  "baseline_lead_and_time_only": {
+    "brier": 0.17599,
+    "log_loss": 0.51528
+  },
+  "calibration": [
+    {
+      "bin": "0.0-0.1",
+      "predicted": 0.0364,
+      "actual": 0.0433,
+      "share_of_game_time": 0.0944
+    },
+    {
+      "bin": "0.1-0.2",
+      "predicted": 0.1502,
+      "actual": 0.1852,
+      "share_of_game_time": 0.0623
+    },
+    {
+      "bin": "0.2-0.3",
+      "predicted": 0.2508,
+      "actual": 0.2718,
+      "share_of_game_time": 0.0691
+    },
+    {
+      "bin": "0.3-0.4",
+      "predicted": 0.3497,
+      "actual": 0.3323,
+      "share_of_game_time": 0.0797
+    },
+    {
+      "bin": "0.4-0.5",
+      "predicted": 0.456,
+      "actual": 0.4934,
+      "share_of_game_time": 0.1253
+    },
+    {
+      "bin": "0.5-0.6",
+      "predicted": 0.5486,
+      "actual": 0.4751,
+      "share_of_game_time": 0.1625
+    },
+    {
+      "bin": "0.6-0.7",
+      "predicted": 0.6465,
+      "actual": 0.6128,
+      "share_of_game_time": 0.1094
+    },
+    {
+      "bin": "0.7-0.8",
+      "predicted": 0.7496,
+      "actual": 0.7041,
+      "share_of_game_time": 0.0964
+    },
+    {
+      "bin": "0.8-0.9",
+      "predicted": 0.8495,
+      "actual": 0.838,
+      "share_of_game_time": 0.0802
+    },
+    {
+      "bin": "0.9-1.0",
+      "predicted": 0.9638,
+      "actual": 0.9719,
+      "share_of_game_time": 0.1207
+    }
+  ],
+  "checkpoints": {
+    "puck drop": {
+      "games": 1394,
+      "brier": 0.2498,
+      "favourite_won": 0.5258
+    },
+    "after 1st": {
+      "games": 1394,
+      "brier": 0.2138,
+      "favourite_won": 0.6442
+    },
+    "after 2nd": {
+      "games": 1394,
+      "brier": 0.1488,
+      "favourite_won": 0.7575
+    },
+    "5 min left": {
+      "games": 1394,
+      "brier": 0.1017,
+      "favourite_won": 0.83
+    },
+    "1 min left": {
+      "games": 1394,
+      "brier": 0.077,
+      "favourite_won": 0.8572
+    }
+  },
+  "overtime_states_train": 17859,
+  "shootouts_train": 356
+}

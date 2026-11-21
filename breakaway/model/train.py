@@ -30,9 +30,14 @@ from wp import OT_FEATURES, REG_FEATURES, REG_SECONDS, ot_features, parse_situat
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------------------------------------------------------------- Elo ratings
+# Chosen on the validation season (2024-25, the one before the test season) by
+# pregame log loss over a small grid: K in {6,12,20,30}, home ice in {15,30,45},
+# carry-over in {0.5,0.7}, with/without a margin-of-victory multiplier.
+# The test season played no part in the choice.
 ELO_K = 6.0
-ELO_HOME = 30.0          # home-ice advantage in Elo points
+ELO_HOME = 45.0          # home-ice advantage in Elo points
 ELO_CARRY = 0.7          # share of a rating carried into the next season
+ELO_USE_MARGIN = False
 
 
 def load_games() -> list[dict]:
@@ -58,8 +63,9 @@ def attach_elo(games: list[dict]) -> dict[int, float]:
         expected = 1.0 / (1.0 + 10 ** (-g["elo_diff"] / 400.0))
         hs, as_ = g["final"]["home"], g["final"]["away"]
         won = 1.0 if hs > as_ else 0.0
-        margin = abs(hs - as_)
-        mult = math.log(margin + 1.0) + (0.5 if g["final"]["last"] == "REG" else 0.0)
+        mult = 1.0
+        if ELO_USE_MARGIN:
+            mult = math.log(abs(hs - as_) + 1.0) + (0.5 if g["final"]["last"] == "REG" else 0.0)
         delta = ELO_K * mult * (won - expected)
         rating[h] += delta
         rating[a] -= delta
