@@ -1,0 +1,12 @@
+[desktop] market: last 58¢ quote 55¢ / 59¢ vol 9,170 mm −$13.64 long 113 PIT ladder rows 6
+[desktop] final: Final / OT 6–5 | feed items 35 | docWidth 1440
+[desktop] cup: 0-1 71%
+[mobile] market: last 55¢ quote 54¢ / 58¢ vol 9,165 mm −$13.64 long 113 PIT ladder rows 7
+[mobile] final: Final / OT 6–5 | feed items 35 | docWidth 390
+[mobile] cup: 0-1 71%
+[trade desktop] after buy: "Filled 10 @ 35.0¢ avg." | account: Cash | $996.35 | Set aside for orders | $0.15 | OTT wins shares | 10 | OTT doesn't-win shares | 0 | P&L at model price | −$0.46 | open orders: 1
+[trade desktop] after cancel: open orders 0
+[trade desktop] docWidth 1440
+[trade mobile] after buy: "Filled 10 @ 19.0¢ avg." | account: Cash | $997.95 | Set aside for orders | $0.15 | OTT wins shares | 10 | OTT doesn't-win shares | 0 | P&L at model price | −$0.39 | open orders: 1
+[trade mobile] after cancel: open orders 0
+[trade mobile] docWidth 390
