@@ -22,6 +22,8 @@ for (const [dev, w, h] of [["desktop", 1440, 900], ["mobile", 390, 844]]) {
     await page.locator("#playBtn").click();
     await page.waitForTimeout(5000);
     await page.screenshot({ path: `shots/${dev}-2-late.png` });
+    await page.locator("#marketCard").screenshot({ path: `shots/${dev}-2b-market.png` });
+    log.push(`[${dev}] market: last ${await page.locator("#mkLast").textContent()} quote ${await page.locator("#mkQuote").textContent()} vol ${await page.locator("#mkVol").textContent()} mm ${await page.locator("#mkMM").textContent()} ladder rows ${await page.locator("#ladder li").count()}`);
     await page.waitForTimeout(9000);
     await page.screenshot({ path: `shots/${dev}-3-end.png`, fullPage: true });
     log.push(`[${dev}] final: ${await page.locator("#period").textContent()} ${await page.locator("#clock").textContent()} | feed items ${await page.locator("#feed li").count()} | docWidth ${await page.evaluate(() => document.documentElement.scrollWidth)}`);

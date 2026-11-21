@@ -60,6 +60,7 @@
         </div>
       </div>
       <div class="fig" id="fig"><svg id="chart" role="img" aria-label="Win probability chart"></svg></div>
+      <p class="legend" id="legend" hidden><span class="lg lg--model"></span>Model <span class="lg lg--market"></span>Market price</p>
 
       <div class="controls">
         <button type="button" class="btn btn--play" id="playBtn" aria-label="Play">
@@ -80,6 +81,31 @@
       <ol class="feed" id="feed"></ol>
     </section>
   </div>
+
+  <section class="card market-card" id="marketCard" aria-label="Market" hidden>
+    <div class="market-head">
+      <div>
+        <h2 class="card-title">Market · <span id="mkTitle">home team wins</span></h2>
+        <p class="market-note">Simulated traders and a market-making bot trade a contract that pays $1 if <span id="mkHome">the home team</span> wins. Every order goes through Breakaway's Rust matching engine, risk checks and escrow.</p>
+      </div>
+      <dl class="market-stats">
+        <div><dt>Last</dt><dd id="mkLast">—</dd></div>
+        <div><dt>Bid / ask</dt><dd id="mkQuote">—</dd></div>
+        <div><dt>Contracts traded</dt><dd id="mkVol">0</dd></div>
+        <div><dt>Market maker</dt><dd id="mkMM">—</dd></div>
+      </dl>
+    </div>
+    <div class="market-grid">
+      <div>
+        <h3 class="mini-title">Order book</h3>
+        <ol class="ladder" id="ladder" aria-label="Order book"></ol>
+      </div>
+      <div>
+        <h3 class="mini-title">Trades</h3>
+        <ol class="tape" id="tape" aria-label="Recent trades"></ol>
+      </div>
+    </div>
+  </section>
 
   <section class="card swings-card" aria-label="Biggest swings so far">
     <h2 class="card-title">Biggest swings so far</h2>

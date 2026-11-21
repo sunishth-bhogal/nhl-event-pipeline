@@ -22,6 +22,7 @@
 
   let model, report, index;
   let game = null, ev = [], samples = [], endSec = 3600;
+  let mk = null, mkCache = "";
   let t = 0, playing = false, speed = 60, lastTs = null, shownIdx = -1;
 
   // ---------------------------------------------------------------- utils
@@ -220,6 +221,76 @@
     $("scrub").value = String(Math.round(t));
     drawChart(p, idx);
     drawSwings(idx);
+    renderMarket();
+  }
+
+  // ---------------------------------------------------------------- market
+  function lastAt(arr, time) {
+    let lo = 0, hi = arr.length - 1, ans = -1;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (arr[mid][0] <= time) { ans = mid; lo = mid + 1; } else hi = mid - 1;
+    }
+    return ans;
+  }
+
+  function prepareMarket(m, g) {
+    mk = m;
+    mkCache = "";
+    $("marketCard").hidden = !m;
+    $("legend").hidden = !m;
+    if (!m) return;
+    let v = 0;
+    m.cumVol = m.trades.map((tr) => (v += tr[2]));
+    $("mkTitle").textContent = `${g.home.abbrev} wins`;
+    $("mkHome").textContent = g.home.name;
+  }
+
+  function money(c) {
+    const sign = c < 0 ? "−" : "+";
+    return `${sign}$${(Math.abs(c) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  function renderMarket() {
+    if (!mk) return;
+    const qi = lastAt(mk.quotes, t), ti = lastAt(mk.trades, t), bi = lastAt(mk.book, t), mi = lastAt(mk.mm, t);
+    const done = t >= endSec;
+    const key = `${qi}|${ti}|${bi}|${mi}|${done}`;
+    if (key === mkCache) return;
+    mkCache = key;
+    const q = qi >= 0 ? mk.quotes[qi] : [0, -1, -1, -1];
+    $("mkLast").textContent = q[3] >= 0 ? `${q[3]}¢` : "—";
+    $("mkQuote").textContent = `${q[1] > 0 ? q[1] + "¢" : "—"} / ${q[2] > 0 ? q[2] + "¢" : "—"}`;
+    $("mkVol").textContent = (ti >= 0 ? mk.cumVol[ti] : 0).toLocaleString();
+    const home = game.home.abbrev;
+    if (done) {
+      const pnl = mk.summary.pnl_cents.market_maker;
+      $("mkMM").innerHTML = `${money(pnl)} <small>settled</small>`;
+    } else if (mi >= 0) {
+      const [, inv, pnl] = mk.mm[mi];
+      const pos = inv === 0 ? "flat" : `${inv > 0 ? "long" : "short"} ${Math.abs(inv)} ${home}`;
+      $("mkMM").innerHTML = `${money(pnl)} <small>${pos}</small>`;
+    }
+    // order book ladder
+    const snap = bi >= 0 ? mk.book[bi] : [0, [], []];
+    const bids = snap[1], asks = snap[2];
+    const maxQ = Math.max(1, ...bids.map((l) => l[1]), ...asks.map((l) => l[1]));
+    const row = (cls, [p, qty]) =>
+      `<li class="${cls}"><span class="bar" style="width:${(qty / maxQ) * 100}%"></span><span class="px">${p}¢</span><span class="qty">${qty.toLocaleString()}</span></li>`;
+    let html = asks.slice(0, 6).reverse().map((l) => row("ask", l)).join("");
+    const spread = bids.length && asks.length ? `${asks[0][0] - bids[0][0]}¢ spread` : asks.length || bids.length ? "one-sided" : "no orders";
+    html += `<li class="spread">${spread}</li>`;
+    html += bids.slice(0, 6).map((l) => row("bid", l)).join("");
+    $("ladder").innerHTML = html;
+    // trades
+    const recent = [];
+    for (let i = ti; i >= 0 && recent.length < 10; i--) recent.push(mk.trades[i]);
+    $("tape").innerHTML = recent.length
+      ? recent.map(([sec, price, qty, buy, vsMM]) => {
+          const c = clockAt(sec, sec >= 3600 ? 4 : 1);
+          return `<li><span class="t">${c.label.replace("Overtime", "OT")} ${c.clock}</span><span class="${buy ? "buy" : "sell"}">${buy ? "Buy" : "Sell"}</span><span>${qty} @ ${price}¢</span>${vsMM ? '<span class="tag">vs MM</span>' : "<span></span>"}</li>`;
+        }).join("")
+      : '<li class="empty" style="background:none">No trades yet.</li>';
   }
 
   // ---------------------------------------------------------------- chart
@@ -262,6 +333,17 @@
     for (let i = 0; i <= idx; i++) {
       const e = ev[i];
       if (e.kind === "P") g += `<line class="c-pen" x1="${x(e.sec)}" x2="${x(e.sec)}" y1="${y(0) - 6}" y2="${y(0)}"/>`;
+    }
+    if (mk) {
+      let d = "", pen = false;
+      for (const q of mk.quotes) {
+        if (q[0] > t) break;
+        const mid = q[1] > 0 && q[2] > 0 ? (q[1] + q[2]) / 2 : null;
+        if (mid === null) { pen = false; continue; }
+        d += `${pen ? "L" : "M"}${x(q[0]).toFixed(1)},${y(mid / 100).toFixed(1)}`;
+        pen = true;
+      }
+      if (d) g += `<path class="c-market" d="${d}"/>`;
     }
     g += `<path class="c-line" d="${line}"/>`;
     for (let i = 0; i <= idx; i++) {
@@ -351,7 +433,11 @@
 
   async function loadGame(id) {
     pause();
-    const g = await fetch(`games/${id}.json`).then((r) => r.json());
+    const [g, m] = await Promise.all([
+      fetch(`games/${id}.json`).then((r) => r.json()),
+      fetch(`markets/${id}.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ]);
+    prepareMarket(m, g);
     prepare(g);
     $("gamePicker").value = String(id);
   }
